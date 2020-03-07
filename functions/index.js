@@ -32,7 +32,7 @@ app.post('/scream', (request, response) => {
   const newScream = {
     body: request.body.body,
     userHandle: request.body.userHandle,
-    createdAt: new Date().toISOString
+    createdAt: new Date().toISOString()
   }
 
   admin
@@ -48,4 +48,4 @@ app.post('/scream', (request, response) => {
     })
 })
 
-exports.api = functions.https.onRequest(app)
+exports.api = functions.region('europe-west1').https.onRequest(app)
