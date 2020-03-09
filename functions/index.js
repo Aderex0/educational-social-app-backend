@@ -6,7 +6,6 @@ const app = express()
 const firebase = require('firebase')
 const functions = require('firebase-functions')
 const admin = require('firebase-admin')
-// @ts-ignore
 const serviceKey = require('./keys/serviceAccountKey.json')
 
 const firebaseConfig = {
