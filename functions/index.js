@@ -25,6 +25,7 @@ admin.initializeApp()
 
 const db = admin.firestore()
 
+// Get screams route
 app.get('/screams', (request, response) => {
   db.collection('screams')
     .orderBy('createdAt', 'desc')
@@ -45,6 +46,7 @@ app.get('/screams', (request, response) => {
     .catch(err => console.error(err))
 })
 
+// Post screams route
 app.post('/scream', (request, response) => {
   const newScream = {
     body: request.body.body,
@@ -63,8 +65,7 @@ app.post('/scream', (request, response) => {
     })
 })
 
-// Signup Route
-
+// Signup route
 app.post('/signup', (request, response) => {
   const newUser = {
     email: request.body.email,
@@ -72,7 +73,7 @@ app.post('/signup', (request, response) => {
     confirmPassword: request.body.confirmPassword,
     handle: request.body.handle
   }
-
+  let token, userId
   db.doc(`/users/${newUser.handle}`)
     .get()
     .then(doc => {
@@ -87,12 +88,25 @@ app.post('/signup', (request, response) => {
       }
     })
     .then(data => {
+      userId = data.user.uid
       return data.user.getIdToken()
     })
-    .then(token => {
+    .then(idToken => {
+      token = idToken
+      const userCredentials = {
+        handle: newUser.handle,
+        email: newUser.email,
+        createdAt: new Date().toISOString(),
+        userId
+      }
+
+      db.doc(`/users/${newUser.handle}`).set(userCredentials)
+    })
+    .then(() => {
       return response.status(201).json({ token })
     })
     .catch(err => {
+      console.error(err)
       if (err.code === 'auth/email-already-in-use') {
         return response.status(400).json({ email: 'Email is already in use' })
       } else {
