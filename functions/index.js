@@ -1,3 +1,5 @@
+// export GOOGLE_APPLICATION_CREDENTIALS="/Users/barborakadlcikova/Desktop/serviceKey.json"
+
 // Express //
 const express = require('express')
 const app = express()
@@ -6,8 +8,6 @@ const app = express()
 const firebase = require('firebase')
 const functions = require('firebase-functions')
 const admin = require('firebase-admin')
-// @ts-ignore
-const serviceKey = require('./keys/serviceAccountKey.json')
 
 const firebaseConfig = {
   apiKey: 'AIzaSyAuX277hjNb6lLCAifqlOwLwDttsQLe6_k',
@@ -21,10 +21,7 @@ const firebaseConfig = {
 }
 
 firebase.initializeApp(firebaseConfig)
-admin.initializeApp({
-  credential: admin.credential.cert(serviceKey),
-  databaseURL: 'https://educational-social-app.firebaseio.com'
-})
+admin.initializeApp()
 
 const db = admin.firestore()
 
@@ -96,7 +93,11 @@ app.post('/signup', (request, response) => {
       return response.status(201).json({ token })
     })
     .catch(err => {
-      console.error(err)
+      if (err.code === 'auth/email-already-in-use') {
+        return response.status(400).json({ email: 'Email is already in use' })
+      } else {
+        return response.status(500).json({ error: err.code })
+      }
     })
 })
 
