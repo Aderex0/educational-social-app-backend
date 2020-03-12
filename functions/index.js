@@ -65,6 +65,16 @@ app.post('/scream', (request, response) => {
     })
 })
 
+// Email validation helper
+const isEmail = email => {
+  const emailRegEx = /[^@]+@[^\.]+\..+/
+  email.match(emailRegEx) ? true : false
+}
+
+const isEmpty = string => {
+  string.trim() === '' ? true : false
+}
+
 // Signup route
 app.post('/signup', (request, response) => {
   const newUser = {
@@ -73,6 +83,23 @@ app.post('/signup', (request, response) => {
     confirmPassword: request.body.confirmPassword,
     handle: request.body.handle
   }
+
+  // user input fields validations
+  let errors = {}
+  if (isEmpty(newUser.email)) {
+    errors.email = 'Must not be empty'
+  } else if (!isEmail(newUser.email)) {
+    errors.email = 'Must be a valid email address'
+  }
+
+  if (isEmpty(newUser.password)) errors.password = 'Must not be empty'
+  if (newUser.password !== newUser.confirmPassword)
+    errors.confirmPassword = 'Passwords must match'
+  if (isEmpty(newUser.handle)) errors.handle = 'Must not be empty'
+
+  if (Object.keys(errors).length > 0) return response.status(400).json(errors)
+
+  // user registration validation
   let token, userId
   db.doc(`/users/${newUser.handle}`)
     .get()
