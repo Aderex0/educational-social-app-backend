@@ -68,11 +68,19 @@ app.post('/scream', (request, response) => {
 // Email validation helper
 const isEmail = email => {
   const emailRegEx = /[^@]+@[^\.]+\..+/
-  email.match(emailRegEx) ? true : false
+  if (email.match(emailRegEx)) {
+    return true
+  } else {
+    return false
+  }
 }
 
 const isEmpty = string => {
-  string.trim() === '' ? true : false
+  if (string.trim() === '') {
+    return true
+  } else {
+    return false
+  }
 }
 
 // Signup route
@@ -89,7 +97,7 @@ app.post('/signup', (request, response) => {
   if (isEmpty(newUser.email)) {
     errors.email = 'Must not be empty'
   } else if (!isEmail(newUser.email)) {
-    errors.email = 'Must be a valid email address'
+    errors.email = 'Must be a valid email address 1'
   }
 
   if (isEmpty(newUser.password)) errors.password = 'Must not be empty'
