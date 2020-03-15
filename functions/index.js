@@ -46,8 +46,12 @@ app.get('/screams', (request, response) => {
     .catch(err => console.error(err))
 })
 
-// Post screams route
+// Post scream route
 app.post('/scream', (request, response) => {
+  if (request.body.body.trim() === '') {
+    return response.status(400).json({ body: 'Body must not be empty' })
+  }
+
   const newScream = {
     body: request.body.body,
     userHandle: request.body.userHandle,
