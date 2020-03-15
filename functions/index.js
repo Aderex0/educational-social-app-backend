@@ -46,8 +46,46 @@ app.get('/screams', (request, response) => {
     .catch(err => console.error(err))
 })
 
-// Post screams route
-app.post('/scream', (request, response) => {
+const FBAuth = (request, response, next) => {
+  let idToken
+  if (
+    request.headers.authorization &&
+    request.headers.authorization.startsWith('Bearer ')
+  ) {
+    idToken = request.headers.authorization.split('Bearer ')[1]
+  } else {
+    console.error('No token found')
+    return response.status(403).json({ error: 'Unauthorized' })
+  }
+
+  admin
+    .auth()
+    .vertifyIdToken(idToken)
+    .then(decodedToken => {
+      request.user = decodedToken
+      console.log(decodedToken)
+      return db
+        .collection('user')
+        .where('userId', '==', request.user.uid)
+        .limit(1)
+        .get()
+    })
+    .then(data => {
+      request.user.handle = data.docs[0].data().handle
+      return next()
+    })
+    .catch(err => {
+      console.error('Error while vertifying token')
+      return response.status(403).json({ err })
+    })
+}
+
+// Post scream route
+app.post('/scream', FBAuth, (request, response) => {
+  if (request.body.body.trim() === '') {
+    return response.status(400).json({ body: 'Body must not be empty' })
+  }
+
   const newScream = {
     body: request.body.body,
     userHandle: request.body.userHandle,
