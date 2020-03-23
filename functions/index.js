@@ -9,17 +9,6 @@ const firebase = require('firebase')
 const functions = require('firebase-functions')
 const admin = require('firebase-admin')
 
-const firebaseConfig = {
-  apiKey: 'AIzaSyAuX277hjNb6lLCAifqlOwLwDttsQLe6_k',
-  authDomain: 'educational-social-app.firebaseapp.com',
-  databaseURL: 'https://educational-social-app.firebaseio.com',
-  projectId: 'educational-social-app',
-  storageBucket: 'educational-social-app.appspot.com',
-  messagingSenderId: '341133056213',
-  appId: '1:341133056213:web:bdddadd8a1d4141b3aaa5c',
-  measurementId: 'G-TNWY2KSML5'
-}
-
 firebase.initializeApp(firebaseConfig)
 admin.initializeApp()
 
